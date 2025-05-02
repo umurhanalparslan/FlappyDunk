@@ -32,7 +32,7 @@ public class FP_Camera : MonoBehaviour
 
     private void Update()
     {
-        if (player != null)
+        if (player != null && GameStateMachine.Instance.isGameStarted)
         {
             Vector3 pos = transform.position;
             pos.x = player.position.x + offsetX;

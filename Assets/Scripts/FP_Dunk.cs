@@ -4,44 +4,44 @@ using UnityEngine;
 
 public class FP_Dunk : MonoBehaviour
 {
-    [Header("Baglanti yapilacak Player GameObject")]
-    public GameObject playerGameobject;
-
-    [Header("Enum Secimi")]
-    public FP_EnumType.Tags selectedTag = FP_EnumType.Tags.Player;
-
+    private GameObject playerGameObject;
     private FP_Player player;
     private bool touchedBad = false;
     private bool gotPoint = false;
 
     private void Start()
     {
-        if (playerGameobject == null)
+        // Sahnedeki Player enumlu objeyi bul
+        foreach (FP_EnumType obj in FindObjectsOfType<FP_EnumType>())
         {
-            Debug.Log("Player GameObject baglanmamis");
-            return;
+            if (obj.selectedTag == FP_EnumType.Tags.Player)
+            {
+                playerGameObject = obj.gameObject;
+                break;
+            }
         }
-        player = playerGameobject.GetComponent<FP_Player>();
-        if (player == null)
-        {
-            Debug.Log("playerScript component bulunamadi!");
-            return;
-        }
-        Debug.Log("Player ve playerScript bulundu!");
 
+        if (playerGameObject != null)
+            player = playerGameObject.GetComponent<FP_Player>();
     }
+
     private void Update()
     {
         if (player == null) return;
+
         float distance = player.transform.position.x - transform.position.x;
+
+        // Oyuncu potayi gecti ama puan alamadiysa
         if (distance > 2f && distance < 3f)
         {
             if (!gotPoint)
             {
-                player.gameOver = true;
-                Debug.Log("Game Over");
+                // Artik gameOver buraya yazilmiyor
+                Debug.Log("Pota kacirildi ama gameOver disarida kontrol edilecek.");
             }
         }
+
+        // Oyuncu tamamen gectiyse resetle
         if (distance > 4f)
         {
             if (gotPoint)
@@ -51,32 +51,37 @@ public class FP_Dunk : MonoBehaviour
             }
         }
     }
-    private void OnCollisionEnter2D(Collision2D collision)
+
+    private void OnCollisionEnter2D(Collision2D other)
     {
-        if (collision.gameObject.CompareTag(selectedTag.ToString()))
+
+        // Eger carpan objede Player Enum'u varsa
+        FP_EnumType enumScript = other.gameObject.GetComponent<FP_EnumType>();
+        if (enumScript != null && enumScript.selectedTag == FP_EnumType.Tags.Player)
         {
             if (player == null) return;
             player.combo = 1;
             touchedBad = true;
         }
     }
-    private void OnTriggerEnter2D(Collider2D collider)
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (collider.gameObject.CompareTag(selectedTag.ToString()))
+        Debug.Log("🔥 TRIGGER CALISTI! Temas eden: " + other.name);
+        // Eger carpan objede Player Enum'u varsa
+        FP_EnumType enumScript = other.gameObject.GetComponent<FP_EnumType>();
+        if (enumScript != null && enumScript.selectedTag == FP_EnumType.Tags.Player)
         {
             if (player == null) return;
+
             if (!gotPoint)
             {
                 gotPoint = true;
                 if (!touchedBad)
-                {
                     player.combo++;
-
-                }
-                player.score += player.combo;
-
             }
-            
+
+            player.score += player.combo;
         }
     }
 }

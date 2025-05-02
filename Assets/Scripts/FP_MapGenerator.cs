@@ -5,7 +5,7 @@ using UnityEngine;
 public class FP_MapGenerator : MonoBehaviour
 {
     public GameObject player;
-    public GameObject obstaclePreab;
+    public FP_ObjectPool objectPool; // Havuzdan obstacle cekilecek
 
     public GameObject obstacle1;
     public GameObject obstacle2;
@@ -18,6 +18,8 @@ public class FP_MapGenerator : MonoBehaviour
     public float minObstacleRotation;
     public float maxObstacleRotation;
 
+    public float obstacleSpacing = 8f; // Obstacle'lar arasi mesafe
+
     private void Start()
     {
         obstacle1 = GenerateObstacle(player.transform.position.x + 5);
@@ -26,21 +28,27 @@ public class FP_MapGenerator : MonoBehaviour
         obstacle4 = GenerateObstacle(obstacle3.transform.position.x);
     }
 
-
     GameObject GenerateObstacle(float x)
     {
-        GameObject obstacle = GameObject.Instantiate(obstaclePreab);
+        GameObject obstacle = objectPool.GetPooledObject();
+        obstacle.SetActive(true);
         SetTransform(obstacle, x);
         return obstacle;
-
     }
+
     void SetTransform(GameObject obstacle, float x)
     {
-        obstacle.transform.position = new Vector3(x + 6f, Random.Range(minObstacleY, maxObstacleY), obstacle.transform.position.z);
-        obstacle.transform.localRotation = Quaternion.Euler(obstacle.transform.localRotation.eulerAngles.x, Random.Range(minObstacleRotation, maxObstacleRotation), obstacle.transform.localRotation.eulerAngles.z);
+        obstacle.transform.position = new Vector3(x + obstacleSpacing, Random.Range(minObstacleY, maxObstacleY), obstacle.transform.position.z);
+        obstacle.transform.localRotation = Quaternion.Euler(
+            obstacle.transform.localRotation.eulerAngles.x,
+            Random.Range(minObstacleRotation, maxObstacleRotation),
+            obstacle.transform.localRotation.eulerAngles.z
+        );
     }
+
     private void Update()
     {
+
         if (player.transform.position.x > obstacle2.transform.position.x)
         {
             var tempObstacle = obstacle1;

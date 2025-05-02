@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+
 public class FP_Player : MonoBehaviour
 {
     public float jumpForce;
@@ -13,27 +14,41 @@ public class FP_Player : MonoBehaviour
     public float forwardSpeed;
     bool didFlap = false;
 
-
-    public bool gameOver = false;
-
     private void Update()
     {
-        uiScore.text = score.ToString();
-        if (!gameOver)
+        // Skor ve rekor gosterimi
+        uiScore.text = "Skor: " + score + "\nRekor: " + PlayerPrefs.GetInt("HighScore", 0);
+
+        if (Input.GetMouseButtonDown(0))
         {
-            if (Input.GetMouseButtonDown(0))
+            didFlap = true;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        // Oyun basladiysa hareket aktif
+        if (GameStateMachine.Instance.isGameStarted)
+        {
+            rb.velocity = new Vector2(forwardSpeed, rb.velocity.y);
+
+            if (didFlap)
             {
-                didFlap = true;
+                rb.velocity = new Vector2(rb.velocity.x, Vector2.up.y * jumpForce);
+                didFlap = false;
             }
         }
     }
-    private void FixedUpdate()
+
+    // High Score kontrolu
+    public void CheckHighScore()
     {
-        rb.AddForce(Vector2.right * forwardSpeed);
-        if (didFlap)
+        int currentHigh = PlayerPrefs.GetInt("HighScore", 0);
+        if (score > currentHigh)
         {
-            rb.velocity = new Vector2(rb.velocity.x, Vector2.up.y * jumpForce);
-            didFlap = false;
+            PlayerPrefs.SetInt("HighScore", score);
+            PlayerPrefs.Save();
+            Debug.Log("🔥 Yeni rekor! " + score);
         }
     }
 }
