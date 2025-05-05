@@ -11,7 +11,7 @@ public class FP_Dunk : MonoBehaviour
 
     private void Start()
     {
-        // Sahnedeki Player enumlu objeyi bul
+        // Player objesini bulur
         foreach (FP_EnumType obj in FindObjectsOfType<FP_EnumType>())
         {
             if (obj.selectedTag == FP_EnumType.Tags.Player)
@@ -31,18 +31,17 @@ public class FP_Dunk : MonoBehaviour
 
         float distance = player.transform.position.x - transform.position.x;
 
-        // Oyuncu potayi gecti ama puan alamadiysa
+        // Oyuncu potayi gecti ama puan alamadiysa combo sifirlanir
         if (distance > 2f && distance < 3f)
         {
             if (!gotPoint)
             {
-                // Artik gameOver buraya yazilmiyor
-                Debug.Log("Pota kacirildi ama gameOver disarida kontrol edilecek.");
                 player.combo = 0;
+                Debug.Log("❌ Pota kacirildi! Combo sifirlandi.");
             }
         }
 
-        // Oyuncu tamamen gectiyse resetle
+        // Reset ayarlari
         if (distance > 4f)
         {
             if (gotPoint)
@@ -55,8 +54,7 @@ public class FP_Dunk : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-
-        // Eger carpan objede Player Enum'u varsa
+        // Player carptiysa combo sifirlanir
         FP_EnumType enumScript = other.gameObject.GetComponent<FP_EnumType>();
         if (enumScript != null && enumScript.selectedTag == FP_EnumType.Tags.Player)
         {
@@ -68,8 +66,7 @@ public class FP_Dunk : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("🔥 TRIGGER CALISTI! Temas eden: " + other.name);
-        // Eger carpan objede Player Enum'u varsa
+        // Player potaya girdiyse
         FP_EnumType enumScript = other.gameObject.GetComponent<FP_EnumType>();
         if (enumScript != null && enumScript.selectedTag == FP_EnumType.Tags.Player)
         {
@@ -77,12 +74,19 @@ public class FP_Dunk : MonoBehaviour
 
             if (!gotPoint)
             {
+                AudioManager.instance.Play("ScoreSound");
                 gotPoint = true;
+
                 if (!touchedBad)
                     player.combo++;
-            }
 
-            player.score += player.combo;
+                player.score += player.combo;
+
+                if (player.combo == 3)
+                    player.ShowComboMessage();
+
+                Debug.Log("✅ Skor alindi! Combo: " + player.combo + " | Skor: " + player.score);
+            }
         }
     }
 }
