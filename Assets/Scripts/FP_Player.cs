@@ -6,6 +6,7 @@ using TMPro;
 
 public class FP_Player : MonoBehaviour
 {
+    public static FP_Player instance;
     public float jumpForce;
     public Rigidbody2D rb;
     public int combo = 1;
@@ -13,11 +14,17 @@ public class FP_Player : MonoBehaviour
     public TextMeshProUGUI uiScore;
     public float forwardSpeed;
     bool didFlap = false;
+    public bool isPlaying = true;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Update()
     {
         // Skor ve rekor gosterimi
-        uiScore.text = "Skor: " + score + "\nRekor: " + PlayerPrefs.GetInt("HighScore", 0);
+        uiScore.text = "Skor: " + score + "\nRekor: " + PlayerPrefs.GetInt("HighScore", 0) + "\nCombo: " + combo;
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -27,9 +34,9 @@ public class FP_Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Oyun basladiysa hareket aktif
-        if (GameStateMachine.Instance.isGameStarted)
+        if (isPlaying && GameStateMachine.Instance.isGameStarted)
         {
+            rb.simulated = true; // Fizik aktif
             rb.velocity = new Vector2(forwardSpeed, rb.velocity.y);
 
             if (didFlap)
@@ -37,6 +44,10 @@ public class FP_Player : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, Vector2.up.y * jumpForce);
                 didFlap = false;
             }
+        }
+        else
+        {
+            rb.simulated = false; // Fizik tamamen durur (ilerleme + dusme durur)
         }
     }
 

@@ -38,6 +38,7 @@ public class FP_Dunk : MonoBehaviour
             {
                 // Artik gameOver buraya yazilmiyor
                 Debug.Log("Pota kacirildi ama gameOver disarida kontrol edilecek.");
+                player.combo = 0;
             }
         }
 

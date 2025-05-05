@@ -31,6 +31,7 @@ public class FP_GameOverTrigger : MonoBehaviour
     {
         Debug.Log("▶️ Coroutine BASLADI!");
         Time.timeScale = 1f;
+        FaderController.instance.FadeOpen(1.2f);
         yield return new WaitForSeconds(1.5f);
         Debug.Log("🔁 Sahne yukleniyor...");
         SceneManager.LoadScene("FlappyDunk");
