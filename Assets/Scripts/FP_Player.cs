@@ -17,6 +17,8 @@ public class FP_Player : MonoBehaviour
     public float forwardSpeed;
     bool didFlap = false;
     public bool isPlaying = true;
+    public Transform wingLeft;
+    public Transform wingRight;
 
     [Header("Combo UI")]
     public TextMeshProUGUI comboMessageText; // Combo mesaj yazisi
@@ -34,6 +36,8 @@ public class FP_Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             didFlap = true;
+            AnimateWings();
+            AnimateJumpEffect(); // Ziplama animasyonu burada tetiklenir
         }
     }
 
@@ -56,6 +60,51 @@ public class FP_Player : MonoBehaviour
         {
             rb.simulated = false; // Fizik tamamen durdurulur
         }
+    }
+
+    private void AnimateWings()
+    {
+        if (wingLeft == null || wingRight == null) return;
+
+        float upAngle = 40f;
+        float downAngle = -10f;
+        float speed = 0.1f;
+
+        // Sol kanat
+        wingLeft.DOLocalRotate(new Vector3(0, 0, upAngle), speed)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() =>
+            {
+                wingLeft.DOLocalRotate(new Vector3(0, 0, downAngle), speed)
+                    .SetEase(Ease.InOutSine)
+                    .OnComplete(() =>
+                    {
+                        wingLeft.DOLocalRotate(Vector3.zero, speed).SetEase(Ease.OutQuad);
+                    });
+            });
+
+        // Sag kanat (ayna)
+        wingRight.DOLocalRotate(new Vector3(0, 0, -upAngle), speed)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() =>
+            {
+                wingRight.DOLocalRotate(new Vector3(0, 0, -downAngle), speed)
+                    .SetEase(Ease.InOutSine)
+                    .OnComplete(() =>
+                    {
+                        wingRight.DOLocalRotate(Vector3.zero, speed).SetEase(Ease.OutQuad);
+                    });
+            });
+    }
+
+    private void AnimateJumpEffect()
+    {
+        // Topu biraz squash-stretch yaparak ziplama hissi ver
+        transform.DOKill(); // Onceki scale animasyonlarini iptal et
+
+        Sequence jumpSeq = DOTween.Sequence();
+        jumpSeq.Append(transform.DOScale(new Vector3(1.15f, 0.85f, 1f), 0.08f).SetEase(Ease.OutQuad)) // squash
+               .Append(transform.DOScale(Vector3.one, 0.1f).SetEase(Ease.OutBack)); // eski haline don
     }
 
     // High Score kontrolu

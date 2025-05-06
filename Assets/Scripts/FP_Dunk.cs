@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class FP_Dunk : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class FP_Dunk : MonoBehaviour
     private FP_Player player;
     private bool touchedBad = false;
     private bool gotPoint = false;
+
+    [Header("Pota filesi (net)")]
+    public Transform net; // Sallanacak kisim
 
     private void Start()
     {
@@ -82,11 +86,27 @@ public class FP_Dunk : MonoBehaviour
 
                 player.score += player.combo;
 
-                if (player.combo == 3)
+                if (player.combo == 10)
                     player.ShowComboMessage();
+
+                AnimateNet(); // Sallanma animasyonu
 
                 Debug.Log("✅ Skor alindi! Combo: " + player.combo + " | Skor: " + player.score);
             }
         }
+    }
+
+    private void AnimateNet()
+    {
+        if (net == null) return;
+
+        net.DOKill(); // Var olan animasyonu durdur
+
+        Vector3 originalPos = net.localPosition;
+
+        Sequence seq = DOTween.Sequence();
+        seq.Append(net.DOLocalMoveY(originalPos.y - 0.3f, 0.1f).SetEase(Ease.OutQuad))
+           .Append(net.DOLocalMoveY(originalPos.y + 0.15f, 0.1f).SetEase(Ease.InOutSine))
+           .Append(net.DOLocalMoveY(originalPos.y, 0.1f).SetEase(Ease.OutExpo));
     }
 }
