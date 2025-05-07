@@ -31,7 +31,9 @@ public class FP_Player : MonoBehaviour
     private void Update()
     {
         // Skor, rekor ve combo gosterimi
-        uiScore.text = "Skor: " + score + "\nRekor: " + PlayerPrefs.GetInt("HighScore", 0) + "\nCombo: " + combo;
+        uiScore.text = "Skor: " + score + "\nRekor: " + PlayerPrefs.GetInt("HighScore", 0);
+        //Combo gozukmesi icin
+        //+"\nCombo: " + combo bunu yazcaz.
 
         if (Input.GetMouseButtonDown(0))
         {

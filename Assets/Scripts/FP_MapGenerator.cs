@@ -39,11 +39,6 @@ public class FP_MapGenerator : MonoBehaviour
     void SetTransform(GameObject obstacle, float x)
     {
         obstacle.transform.position = new Vector3(x + obstacleSpacing, Random.Range(minObstacleY, maxObstacleY), obstacle.transform.position.z);
-        obstacle.transform.localRotation = Quaternion.Euler(
-            obstacle.transform.localRotation.eulerAngles.x,
-            Random.Range(minObstacleRotation, maxObstacleRotation),
-            obstacle.transform.localRotation.eulerAngles.z
-        );
     }
 
     private void Update()
